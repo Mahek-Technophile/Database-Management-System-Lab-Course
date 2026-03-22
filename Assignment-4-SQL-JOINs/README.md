@@ -80,6 +80,9 @@ INNER JOIN Employee B ON A.manager_id = B.emp_id;
 
 ---
 
+### Implementation:
+
+
 ## FAQs
 
 **Q1. How do you handle ambiguous column names when joining tables?**
