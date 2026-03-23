@@ -11,7 +11,123 @@ Write PL/SQL Procedures and Functions for given problem statements.
 - `EmployeeSalaryLog` table
 
 ---
+### LAB WORK:
+```sql
+-- Create and use database
+CREATE DATABASE students;
+USE students;
 
+-- Create table
+CREATE TABLE stud (
+    prn   INT,
+    name  VARCHAR(10),
+    sub   VARCHAR(10),
+    atnd  INT,
+    marks INT
+);
+
+-- Insert records
+INSERT INTO stud VALUES (123, 'Elsa',  'dbms', 90, 79);
+INSERT INTO stud VALUES (234, 'Moana', 'daa',  93, 85);
+INSERT INTO stud VALUES (345, 'Simba', 'ps',   85, 90);
+INSERT INTO stud VALUES (456, 'Ariel', 'oop',  88, 89);
+
+-- Verify data
+SELECT * FROM stud;
+
+-- ───────
+-- P1: Display all records
+-- ────────
+DELIMITER $
+CREATE PROCEDURE p1()
+BEGIN
+    SELECT * FROM stud;
+END $
+DELIMITER ;
+
+CALL p1();
+
+-- ──────
+-- P2: Get attendance by PRN (IN parameter)
+-- ────────
+DELIMITER $
+CREATE PROCEDURE p2(IN var1 INT)
+BEGIN
+    SELECT atnd FROM stud WHERE prn = var1;
+END $
+DELIMITER ;
+
+CALL p2(234);
+
+-- ────────
+-- P3: Get attendance & marks by PRN
+-- ────────
+DELIMITER $
+CREATE PROCEDURE p3(IN var1 INT)
+BEGIN
+    SELECT atnd, marks FROM stud WHERE prn = var1;
+END $
+DELIMITER ;
+
+CALL p3(123);
+
+-- ──────
+-- P4: Update marks by PRN (IN parameter)
+-- ───
+DELIMITER $
+CREATE PROCEDURE p4(IN var1 INT)
+BEGIN
+    UPDATE stud SET marks = var1 WHERE prn = 456;
+END $
+DELIMITER ;
+
+CALL p4(89);
+SELECT * FROM stud;
+
+-- ──────────
+-- P5: Get max attendance (OUT parameter)
+-- ─────────
+DELIMITER $
+CREATE PROCEDURE p5(OUT v2 INT)
+BEGIN
+    SELECT MAX(atnd) INTO v2 FROM stud;
+END $
+DELIMITER ;
+
+CALL p5(@a);
+SELECT @a;
+
+-- ──────
+-- P6: Get max, min, avg attendance (OUT parameters)
+-- ───────
+DELIMITER $
+CREATE PROCEDURE p6(OUT v1 INT, OUT v2 INT, OUT v3 INT)
+BEGIN
+    SELECT MAX(atnd) INTO v1 FROM stud;
+    SELECT MIN(atnd) INTO v2 FROM stud;
+    SELECT AVG(atnd) INTO v3 FROM stud;
+END $
+DELIMITER ;
+
+CALL p6(@a, @b, @c);
+SELECT @a AS max_atnd, @b AS min_atnd, @c AS avg_atnd;
+
+-- ────────
+-- F1: Function to update marks and return new marks
+-- ────────
+DELIMITER $
+CREATE FUNCTION f1(v1 INT, m1 INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    UPDATE stud SET marks = m1 WHERE prn = v1;
+    RETURN m1;
+END $
+DELIMITER ;
+
+SELECT f1(123, 95);
+SELECT * FROM stud;
+```
 ### Implementation Queries :
 
 #### Creation of DB & INsertion of values:
