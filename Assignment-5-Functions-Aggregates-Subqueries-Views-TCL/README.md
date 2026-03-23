@@ -202,6 +202,423 @@ to update them in the database. The team wants to handle this process as a trans
 <img width="600" height="379" alt="image" src="https://github.com/user-attachments/assets/5ce5155a-1218-4c5a-88a6-661fce39df0a" />
 
 
+
+## SQL :
+
+```sql
+mahek@mahek-ZenBook-UX325EA-UX325EA:~$ sudo mysql
+[sudo] password for mahek: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.0.45-0ubuntu0.22.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE ecommerce_db;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE ecommerce_db;
+Database changed
+mysql> CREATE TABLE customers (
+    ->     customer_id INT          PRIMARY KEY,
+    ->     first_name  VARCHAR(50)  NOT NULL,
+    ->     last_name   VARCHAR(50)  NOT NULL,
+    ->     email       VARCHAR(100) UNIQUE NOT NULL,
+    ->     join_date   DATE         NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  
+mysql> CREATE TABLE products (
+    ->     product_id   INT          PRIMARY KEY,
+    ->     product_name VARCHAR(100) NOT NULL,
+    ->     category     VARCHAR(50)  NOT NULL,
+    ->     price        DECIMAL(10,2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>  
+mysql> CREATE TABLE orders (
+    ->     order_id     INT           PRIMARY KEY,
+    ->     customer_id  INT           NOT NULL,
+    ->     order_date   DATE          NOT NULL,
+    ->     total_amount DECIMAL(10,2) NOT NULL,
+    ->     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  
+mysql> CREATE TABLE order_items (
+    ->     item_id    INT NOT NULL PRIMARY KEY,
+    ->     order_id   INT NOT NULL,
+    ->     product_id INT NOT NULL,
+    ->     quantity   INT NOT NULL,
+    ->     FOREIGN KEY (order_id)   REFERENCES orders(order_id),
+    ->     FOREIGN KEY (product_id) REFERENCES products(product_id)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  
+mysql> CREATE TABLE employees (
+    ->     employee_id INT         PRIMARY KEY,
+    ->     first_name  VARCHAR(50) NOT NULL,
+    ->     last_name   VARCHAR(50) NOT NULL,
+    ->     hire_date   DATE        NOT NULL,
+    ->     department  VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> INSERT INTO customers VALUES
+    ->     (1,  'Winnie',   'Pooh',        'winnie.thepooh@shop.com',   '2024-03-10'),
+    ->     (2,  'Pinocchio','Puppet',      'pinocchio@shop.com',        '2024-06-20'),
+    ->     (3,  'Tigger',   'Tiger',       'tiger@shop.com',            '2022-01-05'),
+    ->     (4,  'Piglet',   'Friend',      'ananya@shop.com',           '2024-09-15'),
+    ->     (5,  'Kanga',    'Mother',      'kiran@shop.com',            '2019-07-11'),
+    ->     (6,  'Roo',      'Joey',        'pooja@shop.com',            '2018-03-22'),
+    ->     (7,  'Aladdin',  'Prince',      'nikhil@shop.com',           '2024-12-01'),
+    ->     (8,  'Elsa',     'Queen',       'tanvi@shop.com',            '2023-08-14');
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql>  
+mysql> INSERT INTO products VALUES
+    ->     (1,  'Rice 5kg',       'Grains',       80.00),
+    ->     (2,  'Wheat Flour 5kg','Grains',        55.00),
+    ->     (3,  'Olive Oil 1L',   'Oils',         350.00),
+    ->     (4,  'Sugar 1kg',      'Sweeteners',    45.00),
+    ->     (5,  'Basmati Rice',   'Grains',       120.00),
+    ->     (6,  'Sunflower Oil',  'Oils',         180.00),
+    ->     (7,  'Honey 500g',     'Sweeteners',   220.00),
+    ->     (8,  'Dal Masoor',     'Pulses',        90.00);
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql>  
+mysql> INSERT INTO orders VALUES
+    ->     (101, 1, '2024-04-01', 5600.00),
+    ->     (102, 2, '2024-07-10',12200.00),
+    ->     (103, 3, '2024-05-20', 8900.00),
+    ->     (104, 1, '2024-11-01', 3200.00),
+    ->     (105, 5, '2024-06-15',18500.00),
+    ->     (106, 6, '2024-09-05',22000.00),
+    ->     (107, 3, '2024-10-12', 4100.00),
+    ->     (108, 7, '2024-12-20', 6700.00),
+    ->     (109, 8, '2024-08-03', 9300.00),
+    ->     (110, 4, '2024-10-25', 3800.00);
+Query OK, 10 rows affected (0.00 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql>  
+mysql> INSERT INTO order_items VALUES
+    ->     (1,  101, 1, 200), (2,  101, 2, 150),
+    ->     (3,  102, 3,  80), (4,  102, 4, 300),
+    ->     (5,  103, 5, 120), (6,  103, 8, 100),
+    ->     (7,  104, 6,  50), (8,  105, 3, 120),
+    ->     (9,  105, 7,  60), (10, 106, 3, 200),
+    ->     (11, 106, 6, 180), (12, 107, 1, 100),
+    ->     (13, 108, 2,  80), (14, 109, 5,  90),
+    ->     (15, 110, 4, 200), (16, 110, 7,  50);
+Query OK, 16 rows affected (0.00 sec)
+Records: 16  Duplicates: 0  Warnings: 0
+
+mysql>  
+mysql> INSERT INTO employees VALUES
+    ->     (1, 'Mickey',   'Mouse',     '2018-06-01', 'Sales'),
+    ->     (2, 'Minnie',   'Mouse',     '2021-03-15', 'Marketing'),
+    ->     (3, 'Donald',   'Duck',      '2014-08-20', 'Operations'),
+    ->     (4, 'Daisy',    'Duck',      '2024-01-10', 'Sales'),
+    ->     (5, 'Goofy',    'Goof',      '2015-11-05', 'HR'),
+    ->     (6, 'Buzz',     'Lightyear', '2023-04-18', 'Marketing');
+Query OK, 6 rows affected (0.00 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM customers;
++-------------+------------+-----------+-------------------------+------------+
+| customer_id | first_name | last_name | email                   | join_date  |
++-------------+------------+-----------+-------------------------+------------+
+|           1 | Winnie     | Pooh      | winnie.thepooh@shop.com | 2024-03-10 |
+|           2 | Pinocchio  | Puppet    | pinocchio@shop.com      | 2024-06-20 |
+|           3 | Tigger     | Tiger     | tiger@shop.com          | 2022-01-05 |
+|           4 | Piglet     | Friend    | ananya@shop.com         | 2024-09-15 |
+|           5 | Kanga      | Mother    | kiran@shop.com          | 2019-07-11 |
+|           6 | Roo        | Joey      | pooja@shop.com          | 2018-03-22 |
+|           7 | Aladdin    | Prince    | nikhil@shop.com         | 2024-12-01 |
+|           8 | Elsa       | Queen     | tanvi@shop.com          | 2023-08-14 |
++-------------+------------+-----------+-------------------------+------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT * FROM products;
++------------+-----------------+------------+--------+
+| product_id | product_name    | category   | price  |
++------------+-----------------+------------+--------+
+|          1 | Rice 5kg        | Grains     |  80.00 |
+|          2 | Wheat Flour 5kg | Grains     |  55.00 |
+|          3 | Olive Oil 1L    | Oils       | 350.00 |
+|          4 | Sugar 1kg       | Sweeteners |  45.00 |
+|          5 | Basmati Rice    | Grains     | 120.00 |
+|          6 | Sunflower Oil   | Oils       | 180.00 |
+|          7 | Honey 500g      | Sweeteners | 220.00 |
+|          8 | Dal Masoor      | Pulses     |  90.00 |
++------------+-----------------+------------+--------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     CONCAT(
+    ->         CONCAT(UPPER(SUBSTR(first_name,1,1)), LOWER(SUBSTR(first_name,2))),
+    ->         ' ',
+    ->         CONCAT(UPPER(SUBSTR(last_name,1,1)),  LOWER(SUBSTR(last_name,2)))
+    ->     ) AS full_name,
+    ->     TIMESTAMPDIFF(MONTH, join_date, CURDATE()) AS membership_months,
+    ->     CONCAT(
+    ->         SUBSTR(email,1,3),
+    ->         '...',
+    ->         SUBSTR(email, INSTR(email,'@'))
+    ->     ) AS masked_email
+    -> FROM customers
+    -> WHERE YEAR(join_date) = 2024
+    -> ORDER BY join_date ASC;
++------------------+-------------------+-----------------+
+| full_name        | membership_months | masked_email    |
++------------------+-------------------+-----------------+
+| Winnie Pooh      |                24 | win...@shop.com |
+| Pinocchio Puppet |                21 | pin...@shop.com |
+| Piglet Friend    |                18 | ana...@shop.com |
+| Aladdin Prince   |                15 | nik...@shop.com |
++------------------+-------------------+-----------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     P.category,
+    ->     SUM(OI.quantity * P.price)  AS total_revenue,
+    ->     ROUND(AVG(OI.quantity),2)   AS avg_qty_per_order,
+    ->     COUNT(DISTINCT OI.order_id) AS unique_orders
+    -> FROM order_items OI
+    -> JOIN products P ON OI.product_id = P.product_id
+    -> GROUP BY P.category
+    -> HAVING SUM(OI.quantity * P.price) > 50000
+    -> ORDER BY total_revenue DESC;
++----------+---------------+-------------------+---------------+
+| category | total_revenue | avg_qty_per_order | unique_orders |
++----------+---------------+-------------------+---------------+
+| Oils     |     181400.00 |            126.00 |             4 |
+| Grains   |      61850.00 |            123.33 |             5 |
++----------+---------------+-------------------+---------------+
+2 rows in set (0.00 sec)
+
+mysql> -- Step 1: avg customer spend
+mysql> SELECT AVG(total_spend) FROM (
+    ->     SELECT customer_id, SUM(total_amount) AS total_spend
+    ->     FROM orders GROUP BY customer_id
+    -> ) AS spend_summary;
++------------------+
+| AVG(total_spend) |
++------------------+
+|     11787.500000 |
++------------------+
+1 row in set (0.00 sec)
+
+mysql> -- Result: avg ≈ 10912.50
+mysql>  
+mysql> -- Step 2: Find high spending customers
+mysql> SELECT customer_id, SUM(total_amount) AS total
+    -> FROM orders GROUP BY customer_id
+    -> HAVING SUM(total_amount) > (
+    ->     SELECT AVG(ts) FROM (SELECT customer_id,SUM(total_amount) ts
+    ->     FROM orders GROUP BY customer_id) s
+    -> );
++-------------+----------+
+| customer_id | total    |
++-------------+----------+
+|           2 | 12200.00 |
+|           3 | 13000.00 |
+|           5 | 18500.00 |
+|           6 | 22000.00 |
++-------------+----------+
+4 rows in set (0.00 sec)
+
+mysql>  
+mysql> -- Full query: employees in same dept as those handling top customers
+mysql> SELECT DISTINCT
+    ->     CONCAT(E.first_name,' ',E.last_name) AS employee_name,
+    ->     E.hire_date,
+    ->     E.department
+    -> FROM employees E
+    -> WHERE E.department IN ('Sales','Operations')
+    -> AND E.employee_id IN (SELECT employee_id FROM employees
+    ->     WHERE TIMESTAMPDIFF(YEAR,hire_date,CURDATE()) >= 2);
++---------------+------------+------------+
+| employee_name | hire_date  | department |
++---------------+------------+------------+
+| Mickey Mouse  | 2018-06-01 | Sales      |
+| Donald Duck   | 2014-08-20 | Operations |
+| Daisy Duck    | 2024-01-10 | Sales      |
++---------------+------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> -- Employees working more than 5 years
+mysql> SELECT first_name, last_name, 'Employee' AS type
+    -> FROM employees
+    -> WHERE TIMESTAMPDIFF(YEAR, hire_date, CURDATE()) > 5
+    ->  
+    -> UNION
+    ->  
+    -> -- Customers who placed 3 or more orders
+    -> SELECT C.first_name, C.last_name, 'Customer' AS type
+    -> FROM customers C
+    -> JOIN orders O ON C.customer_id = O.customer_id
+    -> GROUP BY C.customer_id, C.first_name, C.last_name
+    -> HAVING COUNT(O.order_id) >= 2
+    ->  
+    -> ORDER BY last_name;
++------------+-----------+----------+
+| first_name | last_name | type     |
++------------+-----------+----------+
+| Donald     | Duck      | Employee |
+| Goofy      | Goof      | Employee |
+| Mickey     | Mouse     | Employee |
+| Winnie     | Pooh      | Customer |
+| Tigger     | Tiger     | Customer |
++------------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> -- Create the view
+mysql> CREATE VIEW v_top_customer_revenue AS
+    -> SELECT
+    ->     CONCAT(C.first_name,' ',C.last_name) AS full_name,
+    ->     C.email,
+    ->     SUM(O.total_amount) AS total_lifetime_spending
+    -> FROM customers C
+    -> JOIN orders O ON C.customer_id = O.customer_id
+    -> GROUP BY C.customer_id, C.first_name, C.last_name, C.email
+    -> ORDER BY total_lifetime_spending DESC
+    -> LIMIT 10;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> -- Query the view
+mysql> SELECT * FROM v_top_customer_revenue;
++------------------+-------------------------+-------------------------+
+| full_name        | email                   | total_lifetime_spending |
++------------------+-------------------------+-------------------------+
+| Roo Joey         | pooja@shop.com          |                22000.00 |
+| Kanga Mother     | kiran@shop.com          |                18500.00 |
+| Tigger Tiger     | tiger@shop.com          |                13000.00 |
+| Pinocchio Puppet | pinocchio@shop.com      |                12200.00 |
+| Elsa Queen       | tanvi@shop.com          |                 9300.00 |
+| Winnie Pooh      | winnie.thepooh@shop.com |                 8800.00 |
+| Aladdin Prince   | nikhil@shop.com         |                 6700.00 |
+| Piglet Friend    | ananya@shop.com         |                 3800.00 |
++------------------+-------------------------+-------------------------+
+8 rows in set (0.00 sec)
+
+mysql> -- Show the view definition
+mysql> SHOW CREATE VIEW v_top_customer_revenue\G
+*************************** 1. row ***************************
+                View: v_top_customer_revenue
+         Create View: CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_top_customer_revenue` AS select concat(`C`.`first_name`,' ',`C`.`last_name`) AS `full_name`,`C`.`email` AS `email`,sum(`O`.`total_amount`) AS `total_lifetime_spending` from (`customers` `C` join `orders` `O` on((`C`.`customer_id` = `O`.`customer_id`))) group by `C`.`customer_id`,`C`.`first_name`,`C`.`last_name`,`C`.`email` order by `total_lifetime_spending` desc limit 10
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+
+mysql>  
+mysql> -- Drop the view (when no longer needed)
+mysql> DROP VIEW v_top_customer_revenue;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> -- Add 3 test rows
+mysql> INSERT INTO customers VALUES
+    ->     (101,'Test1','User1','t1@x.com','2024-01-01'),
+    ->     (102,'Test2','User2','t2@x.com','2024-01-02'),
+    ->     (103,'Test3','User3','t3@x.com','2024-01-03');
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Verify they're in
+mysql> SELECT customer_id, first_name FROM customers 
+    -> WHERE customer_id IN (101,102,103);
++-------------+------------+
+| customer_id | first_name |
++-------------+------------+
+|         101 | Test1      |
+|         102 | Test2      |
+|         103 | Test3      |
++-------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> 
+mysql> -- BEGIN TRANSACTION
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> -- Correct update 1: 101 -> 201
+mysql> UPDATE customers SET customer_id = 201 WHERE customer_id = 101;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> 
+mysql> -- Set savepoint here
+mysql> SAVEPOINT after_first_update;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> -- Correct update 2: 102 -> 202
+mysql> UPDATE customers SET customer_id = 202 WHERE customer_id = 102;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> 
+mysql> -- Erroneous update: 103 -> 201 (ERROR 1062 will fire — that's expected!)
+mysql> UPDATE customers SET customer_id = 201 WHERE customer_id = 103;
+ERROR 1062 (23000): Duplicate entry '201' for key 'customers.PRIMARY'
+mysql> 
+mysql> -- Undo back to savepoint (undoes 102->202, keeps 101->201)
+mysql> ROLLBACK TO SAVEPOINT after_first_update;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> -- Redo 102 -> 202
+mysql> UPDATE customers SET customer_id = 202 WHERE customer_id = 102;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> 
+mysql> -- Correct update for 103 -> 203
+mysql> UPDATE customers SET customer_id = 203 WHERE customer_id = 103;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> 
+mysql> -- Commit all
+mysql> COMMIT;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> -- Final verification
+mysql> SELECT customer_id, first_name FROM customers
+    -> WHERE customer_id IN (201,202,203)
+    -> ORDER BY customer_id;
++-------------+------------+
+| customer_id | first_name |
++-------------+------------+
+|         201 | Test1      |
+|         202 | Test2      |
+|         203 | Test3      |
++-------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> 
+
+
+```
+
+
 ## FAQs
 
 **Q1. When should you use a VIEW instead of a regular SELECT?**
