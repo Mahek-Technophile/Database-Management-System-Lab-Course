@@ -151,12 +151,56 @@ ascending order of their join date.
 1. Customer & Employee Analysis (Functional Single Row & Data Sorting)
 The marketing team needs a report of all customers who joined in 2024. The report should display the following for each customer:
 ● Their full name, with the first letter of each name capitalized.
+
 ● A calculated "membership duration" in months since they joined.
+
 ● The first three characters of their email address, followed by ... and the domain (e.g., joh...@example.com). The list should be sorted in
 ascending order of their join date.
 <img width="767" height="461" alt="image" src="https://github.com/user-attachments/assets/d63edd3c-ad6e-4bac-be2b-f52cba52f826" />
 
-2
+
+2. Sales Aggregation & Filtering (Aggregate Functions, GROUP BY, HAVING)
+The sales team wants to identify high-performing product categories. They need a summary report that calculates the total revenue, average
+quantity sold per order, and the number of unique orders for each product category. The report should only include categories that have
+generated a total revenue of more than $1,000,000.
+
+<img width="614" height="344" alt="image" src="https://github.com/user-attachments/assets/876559f1-908b-47ed-8d3a-e18928ec1d08" />
+
+
+3. Employee Performance (Subqueries)
+The HR department wants to reward employees who are top performers. An employee is considered a top performer if they have processed
+orders for at least one customer whose total spending is above the average total spending of all customers. The task is to list the full names
+and hire dates of all top-performing employees.
+<img width="729" height="904" alt="image" src="https://github.com/user-attachments/assets/a112c875-fa09-4556-b72d-cf0973f06ec8" />
+
+4. Data Consolidation (Set Operations)
+The management team wants to cross-reference data from different sources. They need a single list that combines the first and last names of:
+● All employees who have worked for the company for more than 5 years.
+● All customers who have placed at least 10 orders. The list should not contain any duplicate names.
+<img width="752" height="496" alt="image" src="https://github.com/user-attachments/assets/7a987a80-ce48-4297-87a8-f2f283ea2d86" />
+
+5. Simplified Access (View)
+To make future reporting easier, the business intelligence team wants to create a virtual table. This table, named
+v_top_customer_revenue, should show the top 10 customers by their total spending. It should include the customer's
+full name, email, and their total lifetime spending.
+<img width="1860" height="851" alt="image" src="https://github.com/user-attachments/assets/5ab895ed-40b8-4776-8a1e-d2b66d409d2d" />
+
+
+6. Data Integrity & Control (TCL Commands)
+The operations team is performing a critical update. A new system has changed some customer IDs, and they need
+to update them in the database. The team wants to handle this process as a transaction to ensure data integrity.
+● Start a new transaction.
+● Update the customer_id for two specific customers. For example, change customer_id 101 to 201 and 102 to
+202.
+● After the first update (101 to 201), create a savepoint named after_first_update.
+● Mistakenly, you update customer_id 103 to 201 (which is incorrect and a duplicate of the previous update).
+● Rollback the transaction to the after_first_update savepoint to undo only the erroneous change.
+● Correctly update customer_id 103 to 203.
+● Commit the transaction to finalize all correct changes.
+
+<img width="719" height="1005" alt="image" src="https://github.com/user-attachments/assets/b1faaf26-7754-40ac-af0f-edb9d1ecd05b" />
+<img width="600" height="379" alt="image" src="https://github.com/user-attachments/assets/5ce5155a-1218-4c5a-88a6-661fce39df0a" />
+
 
 ## FAQs
 
