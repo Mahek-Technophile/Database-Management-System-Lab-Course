@@ -117,6 +117,46 @@ COMMIT;
 ```
 
 ---
+### Implementation
+#### E-commerce Analytics Project
+An e-commerce company, "Global Groceries," wants to perform a detailed analysis
+of its sales data to improve marketing strategies and customer service. They have
+a database with the following tables:
+● customers: customer_id, first_name, last_name, email, join_date
+● orders: order_id, customer_id, order_date, total_amount
+● order_items: item_id, order_id, product_id, quantity
+● products: product_id, product_name, category, price
+● employees: employee_id, first_name, last_name, hire_date, department
+
+
+#### 1. Customer & Employee Analysis (Functional Single Row & Data Sorting)
+The marketing team needs a report of all customers who joined in 2024. The report should display the following for each customer:
+● Their full name, with the first letter of each name capitalized.
+● A calculated "membership duration" in months since they joined.
+● The first three characters of their email address, followed by ... and the domain (e.g., joh...@example.com). The list should be sorted in
+ascending order of their join date.
+
+##### 1. Creating Database 
+<img width="720" height="813" alt="image" src="https://github.com/user-attachments/assets/a87a34d5-fda9-4b02-bdc6-00cf90a27a06" />
+<img width="646" height="370" alt="image" src="https://github.com/user-attachments/assets/c2f60771-f0ed-44c1-893d-c9823ac3cb16" />
+
+#### 2. Inserting values and displaying
+<img width="813" height="965" alt="image" src="https://github.com/user-attachments/assets/b48f4dab-12b7-4033-8af4-704f964d97b8" />
+<img width="847" height="188" alt="image" src="https://github.com/user-attachments/assets/5c5d9ff4-9a02-46b0-9a1b-b6b7ef39c138" />
+
+#### 3. Display 
+<img width="773" height="540" alt="image" src="https://github.com/user-attachments/assets/301c7e67-6821-4f48-828c-c8ecbc5d0e40" />
+
+#### 4. Queries
+1. Customer & Employee Analysis (Functional Single Row & Data Sorting)
+The marketing team needs a report of all customers who joined in 2024. The report should display the following for each customer:
+● Their full name, with the first letter of each name capitalized.
+● A calculated "membership duration" in months since they joined.
+● The first three characters of their email address, followed by ... and the domain (e.g., joh...@example.com). The list should be sorted in
+ascending order of their join date.
+<img width="767" height="461" alt="image" src="https://github.com/user-attachments/assets/d63edd3c-ad6e-4bac-be2b-f52cba52f826" />
+
+2
 
 ## FAQs
 
