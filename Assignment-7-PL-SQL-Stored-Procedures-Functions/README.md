@@ -12,56 +12,334 @@ Write PL/SQL Procedures and Functions for given problem statements.
 
 ---
 
-## Theory
+### Implementation Queries :
 
-### Function vs Procedure
+#### Creation of DB & INsertion of values:
+<img width="821" height="880" alt="image" src="https://github.com/user-attachments/assets/6f0afdaa-48e9-4906-9cb5-779783a6010a" />
 
-| Feature | Stored Function | Stored Procedure |
-|---------|----------------|-----------------|
-| Returns value | **Must** return a value | Optional (via OUT params) |
-| Called via | `SELECT` statement | `CALL` statement |
-| Parameters | IN only | IN, OUT, INOUT |
-| Use in SQL | Yes (e.g., in `SELECT`, `WHERE`) | No |
+### Q.1) Design a procedure named UpdateEmployeeSalary that takes two input parameters: employee_id (an integer) and new_salary (a decimal).
+<img width="802" height="771" alt="image" src="https://github.com/user-attachments/assets/d7a7a967-3d73-47b8-b2a5-ed1189c9e0ff" />
 
-### Parameter Modes
-| Mode | Description |
-|------|-------------|
-| `IN` | Input parameter — value passed into the routine (default) |
-| `OUT` | Output parameter — value passed back to the caller |
-| `INOUT` | Both input and output — value passed in and modified value returned |
+1. Check if an employee with the provided employee_id exists in the Employees table.
+ <img width="804" height="500" alt="image" src="https://github.com/user-attachments/assets/ff04532c-7c88-4574-87ac-5aac26100f60" />
+  
+2. If the employee exists, update their salary to the new_salary.
+<img width="776" height="496" alt="image" src="https://github.com/user-attachments/assets/1a59f526-e145-4012-b6b9-4056e0470aef" />
 
-### DELIMITER
-MySQL uses `;` as its default statement terminator. Since procedure bodies contain `;` inside them, the `DELIMITER` command changes the terminator temporarily so MySQL does not prematurely end the `CREATE PROCEDURE` statement.
+3.  If the employee does not exist, do nothing.
+<img width="570" height="184" alt="image" src="https://github.com/user-attachments/assets/fa8694dd-9d9d-4c39-9a1b-7a73e38a9c96" />
 
+4. After the update (if it occurred), insert a record into an EmployeeSalaryLog table. This log table should capture the employee_id, the
+old_salary, the new_salary, and the timestamp of the update. The old_salary should be the value before the update took place.
+<img width="688" height="747" alt="image" src="https://github.com/user-attachments/assets/d91298df-4d0e-4c55-a414-499d4681e132" />
+
+### Q.2) Create a function named CalculateAnnualBonus that accepts one input parameter: employee_id (an integer). The function should return a decimal value representing the employee's annual bonus. The bonus is calculated based on their current salary and their years of service.
+<img width="679" height="780" alt="image" src="https://github.com/user-attachments/assets/2a08bbe8-6346-41ab-b20f-e1b6c0ae2536" />
+
+The calculation rules are as follows:
+● If an employee has less than 5 years of service, their bonus is 10% of their current salary.
+● If an employee has 5 or more years of service but less than 10, their bonus is 15% of their current salary.
+● If an employee has 10 or more years of service, their bonus is 20% of their current salary.
+The function should retrieve the employee's salary from the Employees table and their years of service by calculating the difference
+between the current date and their hire_date. If the employee_id does not exist, the function should return NULL.
+   <img width="1061" height="775" alt="image" src="https://github.com/user-attachments/assets/844f8876-e65d-4010-aa1e-8b730c12fff1" />
+
+### Implementation:
 ```sql
-DELIMITER $$
+mahek@mahek-ZenBook-UX325EA-UX325EA:~$ sudo mysql
+[sudo] password for mahek: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.45-0ubuntu0.22.04.1 (Ubuntu)
 
-CREATE PROCEDURE my_proc()
-BEGIN
-    SELECT 'Hello';
-END$$
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
 
-DELIMITER ;
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE employee_db;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE employee_db;
+Database changed
+mysql> CREATE TABLE Employees (
+    ->     employee_id INT          PRIMARY KEY,
+    ->     first_name  VARCHAR(50)  NOT NULL,
+    ->     last_name   VARCHAR(50)  NOT NULL,
+    ->     salary      DECIMAL(10,2) NOT NULL,
+    ->     hire_date   DATE          NOT NULL,
+    ->     department  VARCHAR(50)   NOT NULL
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  
+mysql> CREATE TABLE EmployeeSalaryLog (
+    ->     log_id      INT           PRIMARY KEY AUTO_INCREMENT,
+    ->     employee_id INT           NOT NULL,
+    ->     old_salary  DECIMAL(10,2) NOT NULL,
+    ->     new_salary  DECIMAL(10,2) NOT NULL,
+    ->     updated_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> INSERT INTO Employees VALUES
+    ->     (1, 'Mickey',  'Mouse',   45000.00, '1928-11-18', 'Entertainment'),
+    ->     (2, 'Elsa',    'Arendelle', 60000.00, '2013-11-27', 'Royalty'),
+    ->     (3, 'Simba',   'Lion',    72000.00, '1994-06-24', 'Leadership'),
+    ->     (4, 'Moana',   'Voyager', 30000.00, '2016-11-23', 'Exploration'),
+    ->     (5, 'Aladdin', 'Streetrat', 85000.00, '1992-11-25', 'Adventure'),
+    ->     (6, 'Buzz',    'Lightyear', 55000.00, '1995-11-22', 'Space');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> DELIMITER $$
+mysql>  
+mysql> CREATE PROCEDURE UpdateEmployeeSalary(
+    ->     IN p_emp_id     INT,
+    ->     IN p_new_salary DECIMAL(10,2)
+    -> )
+    -> BEGIN
+    ->     DECLARE v_old_salary DECIMAL(10,2);
+    ->     DECLARE emp_count    INT DEFAULT 0;
+    ->  
+    ->     -- Check if the employee exists
+    ->     SELECT COUNT(*) INTO emp_count
+    ->     FROM Employees
+    ->     WHERE employee_id = p_emp_id;
+    ->  
+    ->     IF emp_count > 0 THEN
+    ->  
+    ->         -- Capture old salary before update
+    ->         SELECT salary INTO v_old_salary
+    ->         FROM Employees
+    ->         WHERE employee_id = p_emp_id;
+    ->  
+    ->         -- Update salary in Employees table
+    ->         UPDATE Employees
+    ->         SET salary = p_new_salary
+    ->         WHERE employee_id = p_emp_id;
+    ->  
+    ->         -- Log the salary change
+    ->         INSERT INTO EmployeeSalaryLog (employee_id, old_salary, new_salary)
+    ->         VALUES (p_emp_id, v_old_salary, p_new_salary);
+    ->  
+    ->         SELECT CONCAT('Salary updated for employee ID: ', p_emp_id) AS message;
+    ->  
+    ->     ELSE
+    ->         SELECT 'ERROR: Employee not found.' AS message;
+    ->     END IF;
+    ->  
+    -> END$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  
+mysql> DELIMITER ;
+mysql> CALL UpdateEmployeeSalary(1, 52000.00);
++-----------------------------------+
+| message                           |
++-----------------------------------+
+| Salary updated for employee ID: 1 |
++-----------------------------------+
+1 row in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> -- Verify the update in Employees
+mysql> SELECT employee_id, first_name, salary FROM Employees WHERE employee_id = 1;
++-------------+------------+----------+
+| employee_id | first_name | salary   |
++-------------+------------+----------+
+|           1 | Mickey     | 52000.00 |
++-------------+------------+----------+
+1 row in set (0.00 sec)
+
+mysql> -- Verify the log entry
+mysql> SELECT * FROM EmployeeSalaryLog;
++--------+-------------+------------+------------+---------------------+
+| log_id | employee_id | old_salary | new_salary | updated_at          |
++--------+-------------+------------+------------+---------------------+
+|      1 |           1 |   45000.00 |   52000.00 | 2026-03-23 22:33:17 |
++--------+-------------+------------+------------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> CALL UpdateEmployeeSalary(99, 70000.00);
++----------------------------+
+| message                    |
++----------------------------+
+| ERROR: Employee not found. |
++----------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CALL UpdateEmployeeSalary(2, 65000.00);
++-----------------------------------+
+| message                           |
++-----------------------------------+
+| Salary updated for employee ID: 2 |
++-----------------------------------+
+1 row in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CALL UpdateEmployeeSalary(3, 80000.00);
++-----------------------------------+
+| message                           |
++-----------------------------------+
+| Salary updated for employee ID: 3 |
++-----------------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL UpdateEmployeeSalary(5, 90000.00);
++-----------------------------------+
+| message                           |
++-----------------------------------+
+| Salary updated for employee ID: 5 |
++-----------------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql>  
+mysql> SELECT * FROM EmployeeSalaryLog ORDER BY log_id;
++--------+-------------+------------+------------+---------------------+
+| log_id | employee_id | old_salary | new_salary | updated_at          |
++--------+-------------+------------+------------+---------------------+
+|      1 |           1 |   45000.00 |   52000.00 | 2026-03-23 22:33:17 |
+|      2 |           2 |   60000.00 |   65000.00 | 2026-03-23 22:34:04 |
+|      3 |           3 |   72000.00 |   80000.00 | 2026-03-23 22:34:04 |
+|      4 |           5 |   85000.00 |   90000.00 | 2026-03-23 22:34:04 |
++--------+-------------+------------+------------+---------------------+
+4 rows in set (0.00 sec)
+
+mysql> SHOW PROCEDURE STATUS WHERE Name = 'UpdateEmployeeSalary'\G
+*************************** 1. row ***************************
+                  Db: employee_db
+                Name: UpdateEmployeeSalary
+                Type: PROCEDURE
+             Definer: root@localhost
+            Modified: 2026-03-23 22:33:04
+             Created: 2026-03-23 22:33:04
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+
+mysql> -- DROP PROCEDURE UpdateEmployeeSalary;
+mysql> DELIMITER $$
+mysql>  
+mysql> CREATE FUNCTION CalculateAnnualBonus(p_emp_id INT)
+    -> RETURNS DECIMAL(10,2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE v_salary    DECIMAL(10,2);
+    ->     DECLARE v_years     INT;
+    ->     DECLARE v_bonus_pct DECIMAL(5,2);
+    ->     DECLARE emp_count   INT DEFAULT 0;
+    ->  
+    ->     -- Check employee exists
+    ->     SELECT COUNT(*) INTO emp_count
+    ->     FROM Employees WHERE employee_id = p_emp_id;
+    ->  
+    ->     IF emp_count = 0 THEN
+    ->         RETURN NULL;
+    ->     END IF;
+    ->  
+    ->     -- Get salary and years of service
+    ->     SELECT salary,
+    ->            TIMESTAMPDIFF(YEAR, hire_date, CURDATE())
+    ->     INTO   v_salary, v_years
+    ->     FROM   Employees WHERE employee_id = p_emp_id;
+    ->  
+    ->     -- Apply bonus tier
+    ->     IF v_years < 5 THEN
+    ->         SET v_bonus_pct = 0.10;
+    ->     ELSEIF v_years < 10 THEN
+    ->         SET v_bonus_pct = 0.15;
+    ->     ELSE
+    ->         SET v_bonus_pct = 0.20;
+    ->     END IF;
+    ->  
+    ->     RETURN ROUND(v_salary * v_bonus_pct, 2);
+    ->  
+    -> END$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  
+mysql> DELIMITER ;
+mysql> 
+mysql> SELECT
+    ->     employee_id,
+    ->     CONCAT(first_name,' ',last_name)         AS name,
+    ->     salary                                   AS current_salary,
+    ->     hire_date,
+    ->     TIMESTAMPDIFF(YEAR, hire_date, CURDATE()) AS years_of_service,
+    ->     CASE
+    ->         WHEN TIMESTAMPDIFF(YEAR,hire_date,CURDATE()) < 5  THEN '10%'
+    ->         WHEN TIMESTAMPDIFF(YEAR,hire_date,CURDATE()) < 10 THEN '15%'
+    ->         ELSE '20%'
+    ->     END                                      AS bonus_tier,
+    ->     CalculateAnnualBonus(employee_id)         AS annual_bonus
+    -> FROM Employees
+    -> ORDER BY employee_id;
++-------------+-------------------+----------------+------------+------------------+------------+--------------+
+| employee_id | name              | current_salary | hire_date  | years_of_service | bonus_tier | annual_bonus |
++-------------+-------------------+----------------+------------+------------------+------------+--------------+
+|           1 | Mickey Mouse      |       52000.00 | 1928-11-18 |               97 | 20%        |     10400.00 |
+|           2 | Elsa Arendelle    |       65000.00 | 2013-11-27 |               12 | 20%        |     13000.00 |
+|           3 | Simba Lion        |       80000.00 | 1994-06-24 |               31 | 20%        |     16000.00 |
+|           4 | Moana Voyager     |       30000.00 | 2016-11-23 |                9 | 15%        |      4500.00 |
+|           5 | Aladdin Streetrat |       90000.00 | 1992-11-25 |               33 | 20%        |     18000.00 |
+|           6 | Buzz Lightyear    |       55000.00 | 1995-11-22 |               30 | 20%        |     11000.00 |
++-------------+-------------------+----------------+------------+------------------+------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT CalculateAnnualBonus(4) AS bonus_for_emp4;
++----------------+
+| bonus_for_emp4 |
++----------------+
+|        4500.00 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> -- Neha Gupta: 30000 x 10% = 3000.00
+mysql> SELECT CalculateAnnualBonus(999) AS result;
++--------+
+| result |
++--------+
+|   NULL |
++--------+
+1 row in set (0.00 sec)
+
+mysql> -- emp_id 999 does not exist -> returns NULL
+mysql> SHOW FUNCTION STATUS WHERE Name = 'CalculateAnnualBonus'\G
+*************************** 1. row ***************************
+                  Db: employee_db
+                Name: CalculateAnnualBonus
+                Type: FUNCTION
+             Definer: root@localhost
+            Modified: 2026-03-23 22:35:03
+             Created: 2026-03-23 22:35:03
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+
+mysql> -- DROP FUNCTION CalculateAnnualBonus;
+mysql> ^C
+mysql> 
+
+
 ```
-
-### DETERMINISTIC vs NOT DETERMINISTIC
-- **DETERMINISTIC**: The function always returns the same result for the same input parameters.
-- **NOT DETERMINISTIC**: The function may return different results for the same input (e.g., functions using `RAND()`, `NOW()`).
-
-### Error Handling
-```sql
-DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
-BEGIN
-    -- handle error
-END;
-
-DECLARE EXIT HANDLER FOR SQLEXCEPTION
-BEGIN
-    -- exit the block on error
-END;
-```
-
----
 
 ## Q1 — Procedure: UpdateEmployeeSalary
 
@@ -167,6 +445,56 @@ FROM Employees;
 
 ---
 
+## Theory
+
+### Function vs Procedure
+
+| Feature | Stored Function | Stored Procedure |
+|---------|----------------|-----------------|
+| Returns value | **Must** return a value | Optional (via OUT params) |
+| Called via | `SELECT` statement | `CALL` statement |
+| Parameters | IN only | IN, OUT, INOUT |
+| Use in SQL | Yes (e.g., in `SELECT`, `WHERE`) | No |
+
+### Parameter Modes
+| Mode | Description |
+|------|-------------|
+| `IN` | Input parameter — value passed into the routine (default) |
+| `OUT` | Output parameter — value passed back to the caller |
+| `INOUT` | Both input and output — value passed in and modified value returned |
+
+### DELIMITER
+MySQL uses `;` as its default statement terminator. Since procedure bodies contain `;` inside them, the `DELIMITER` command changes the terminator temporarily so MySQL does not prematurely end the `CREATE PROCEDURE` statement.
+
+```sql
+DELIMITER $$
+
+CREATE PROCEDURE my_proc()
+BEGIN
+    SELECT 'Hello';
+END$$
+
+DELIMITER ;
+```
+
+### DETERMINISTIC vs NOT DETERMINISTIC
+- **DETERMINISTIC**: The function always returns the same result for the same input parameters.
+- **NOT DETERMINISTIC**: The function may return different results for the same input (e.g., functions using `RAND()`, `NOW()`).
+
+### Error Handling
+```sql
+DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+BEGIN
+    -- handle error
+END;
+
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+    -- exit the block on error
+END;
+```
+
+---
 ## FAQs
 
 **Q1. What is the difference between a Function and a Procedure?**
