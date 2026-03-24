@@ -27,6 +27,22 @@ pip install PyMySQL
 ```
 
 ---
+## Step 2: Use connect method With 3 parameters:
+* Host 
+* User name 
+* Password
+
+* ```python
+import pymysql
+
+# Step 3: Create connection object
+database = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="your_password",   # <-- change to your MySQL password
+    database="edu_db"
+)
+print("Connection established successfully!")
 
 ## STEP 2: MySQL Backend — Create Database & Tables
 
