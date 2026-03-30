@@ -13,3 +13,10 @@ This repository contains MySQL queries and expected outputs for each experiment 
 | 5 | Functions, Aggregates, Subqueries, Views, TCL | [Assignment 5](Assignment-5-Functions-Aggregates-Subqueries-Views-TCL/README.md) |
 | 6 | PyMySQL Connectivity | [Assignment 6](Assignment-6-PyMySQL-Connectivity/README.md) |
 | 7 | PL/SQL Stored Procedures & Functions | [Assignment 7](Assignment-7-PL-SQL-Stored-Procedures-Functions/README.md) |
+
+
+# Mini Project
+## Inventory Management System
+
+| 1. |  ER diagram |  |
+| 2. | Project Report | |
