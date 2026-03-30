@@ -19,5 +19,5 @@ This repository contains MySQL queries and expected outputs for each experiment 
 ## Inventory Management System
 | # | Title | Link |
 |---|-------|------|
-| 1 | ER Diagram |  |
-| 1 | Proj Report |  |
+| 1 | ER Diagram | [Diagram](Project/ER%20diagram) |
+| 1 | Proj Report | [Report](Project/ProjectReport.md) |
