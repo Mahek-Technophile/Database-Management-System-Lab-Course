@@ -1,0 +1,145 @@
+erDiagram
+    WAREHOUSE ||--o{ INVENTORY : stores
+    WAREHOUSE ||--o{ EMPLOYEE : employs
+    WAREHOUSE {
+        int warehouse_id PK
+        string warehouse_name
+        string address
+        string city
+        string state
+        string zip_code
+        string phone
+        string manager_name
+        decimal total_capacity
+    }
+
+    PRODUCT ||--o{ INVENTORY : "tracked_in"
+    PRODUCT ||--o{ ORDER_ITEM : "ordered_as"
+    PRODUCT {
+        int product_id PK
+        string product_name
+        string description
+        string category
+        string SKU
+        decimal unit_price
+        int reorder_level
+        string manufacturer
+    }
+
+    SUPPLIER ||--o{ PRODUCT : supplies
+    SUPPLIER ||--o{ PURCHASE_ORDER : "receives_from"
+    SUPPLIER {
+        int supplier_id PK
+        string supplier_name
+        string contact_person
+        string email
+        string phone
+        string address
+        string city
+        string country
+        string payment_terms
+    }
+
+    INVENTORY }o--|| PRODUCT : contains
+    INVENTORY }o--|| WAREHOUSE : "located_in"
+    INVENTORY {
+        int inventory_id PK
+        int product_id FK
+        int warehouse_id FK
+        int quantity_on_hand
+        int quantity_reserved
+        int quantity_available
+        date last_updated
+        string location_bin
+    }
+
+    CUSTOMER ||--o{ SALES_ORDER : places
+    CUSTOMER {
+        int customer_id PK
+        string customer_name
+        string contact_person
+        string email
+        string phone
+        string shipping_address
+        string city
+        string state
+        string zip_code
+        string customer_type
+    }
+
+    SALES_ORDER ||--|{ ORDER_ITEM : contains
+    SALES_ORDER }o--|| WAREHOUSE : "fulfilled_from"
+    SALES_ORDER {
+        int order_id PK
+        int customer_id FK
+        int warehouse_id FK
+        date order_date
+        date required_date
+        date shipped_date
+        string status
+        decimal total_amount
+        string shipping_method
+    }
+
+    ORDER_ITEM }o--|| PRODUCT : references
+    ORDER_ITEM }o--|| SALES_ORDER : "belongs_to"
+    ORDER_ITEM {
+        int order_item_id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+        decimal discount
+        decimal line_total
+    }
+
+    PURCHASE_ORDER ||--|{ PURCHASE_ITEM : contains
+    PURCHASE_ORDER }o--|| SUPPLIER : "ordered_from"
+    PURCHASE_ORDER }o--|| WAREHOUSE : "delivered_to"
+    PURCHASE_ORDER {
+        int purchase_order_id PK
+        int supplier_id FK
+        int warehouse_id FK
+        date order_date
+        date expected_delivery
+        date received_date
+        string status
+        decimal total_amount
+    }
+
+    PURCHASE_ITEM }o--|| PRODUCT : references
+    PURCHASE_ITEM }o--|| PURCHASE_ORDER : "belongs_to"
+    PURCHASE_ITEM {
+        int purchase_item_id PK
+        int purchase_order_id FK
+        int product_id FK
+        int quantity_ordered
+        int quantity_received
+        decimal unit_cost
+        decimal line_total
+    }
+
+    EMPLOYEE }o--|| WAREHOUSE : "works_at"
+    EMPLOYEE {
+        int employee_id PK
+        int warehouse_id FK
+        string employee_name
+        string position
+        string email
+        string phone
+        date hire_date
+        decimal salary
+    }
+
+    STOCK_MOVEMENT }o--|| PRODUCT : tracks
+    STOCK_MOVEMENT }o--|| WAREHOUSE : "occurs_in"
+    STOCK_MOVEMENT {
+        int movement_id PK
+        int product_id FK
+        int warehouse_id FK
+        string movement_type
+        int quantity
+        date movement_date
+        string reference_number
+        string notes
+    }
