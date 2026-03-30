@@ -20,6 +20,127 @@ Connect Python to MySQL using PyMySQL and perform all DDL and DML operations pro
 
 ---
 
+## Implementation of Lab PS
+<img width="1129" height="762" alt="image" src="https://github.com/user-attachments/assets/38c29a56-69c5-4d59-bb4e-b6c50b4f3993" />
+<img width="1125" height="616" alt="image" src="https://github.com/user-attachments/assets/5a0c6805-7a23-4f44-aab5-29f93dcb3c0b" />
+<img width="1116" height="369" alt="image" src="https://github.com/user-attachments/assets/ad1747dd-d117-4e1a-bf74-a7d6f9dc19ac" />
+
+```python
+! pip install PyMySQL
+```
+Collecting PyMySQL
+  Downloading pymysql-1.1.2-py3-none-any.whl.metadata (4.3 kB)
+Downloading pymysql-1.1.2-py3-none-any.whl (45 kB)
+Installing collected packages: PyMySQL
+Successfully installed PyMySQL-1.1.2
+
+```python
+#importing pymysql
+import pymysql
+#Creating a connection object
+database = pymysql.connect(host = 'localhost',
+user = 'root',
+password = 'mysqlroot')
+#Cursor to the db
+cursor = database.cursor()
+cursor.execute("CREATE DATABASE democonn7")
+print("demconn7 data base is created")
+```
+demconn1 data base is created
+
+### MySQL:
+<img width="488" height="636" alt="image" src="https://github.com/user-attachments/assets/46a1feb5-3dea-415d-8fff-c1d8a73e3052" />
+
+
+```python
+#importing pymysql
+import pymysql
+#Creating a connection object
+database = pymysql.connect(host = 'localhost',
+user = 'root',
+password = 'mysqlroot',
+database = 'democonn7')
+#Cursor to the db
+
+cursor = database.cursor()
+cursor.execute("CREATE TABLE studA(prn int, name VARCHAR(25), subject VARCHAR(25))")
+cursor.close()
+database.close()
+
+print("table created")
+```
+table created
+
+### MySQL:
+<img width="902" height="253" alt="image" src="https://github.com/user-attachments/assets/b4ad5c2c-98ca-44bb-8cd8-edbd207dfdbe" />
+
+
+```python
+#importing pymysql
+import pymysql
+#Creating a connection object
+database = pymysql.connect(host = 'localhost',
+user = 'root',
+password ='mysqlroot',
+database = 'democonn7')
+#Cursor to the db
+#Creating a cursor object
+cursor = database.cursor()
+sql = "INSERT INTO studA(prn, name, subject) VALUES (%s,%s,%s)"
+val=[("102", "ankush", "PBL3"), ("103", "yash", "DBMS"), ("104","shambhavee", "DAA")]
+cursor.executemany(sql,val)
+database.commit()
+print(cursor.rowcount, "record inserted.")
+```
+
+3 record inserted.
+
+### MYSQL
+<img width="568" height="332" alt="image" src="https://github.com/user-attachments/assets/df93d3e6-819d-4d0b-9b31-04d27134c261" />
+
+```python
+#importing pymysql
+import pymysql
+#Creating a connection object
+database = pymysql.connect(host = 'localhost',
+user = 'root',
+password = 'mysqlroot',
+database = 'democonn7')
+#Cursor to the db
+#Creating a cursor object
+cursor = database.cursor()
+cursor.execute("DELETE FROM studA WHERE name = 'yash' ")
+database.commit()
+print(cursor.rowcount, "record inserted.")
+```
+1 record inserted.
+
+## Mysql 
+<img width="567" height="256" alt="image" src="https://github.com/user-attachments/assets/9a9616d3-dac6-4e87-a631-30adf733f3ea" />
+
+```python
+#importing pymysql
+import pymysql
+#Creating a connection object
+database = pymysql.connect(host = 'localhost',
+user = 'root',
+password = 'mysqlroot',
+database = 'democonn7')
+#Cursor to the db
+#Creating a cursor object
+cursor = database.cursor()
+cursor.execute(" SELECT * FROM studA")
+#printing the results
+results = cursor.fetchall()
+for row in results:
+    print (row)
+```
+(102, 'ankush', 'PBL3')
+(104, 'shambhavee', 'DAA')
+
+
+## implementation of batch A PS 
+
 ## STEP 1: Install PyMySQL
 
 ```bash
@@ -32,8 +153,6 @@ pip install PyMySQL
 * User name 
 * Password
 
-* ```python
-import pymysql
 
 # Step 3: Create connection object
 database = pymysql.connect(
@@ -44,268 +163,6 @@ database = pymysql.connect(
 )
 print("Connection established successfully!")
 
-## STEP 2: MySQL Backend — Create Database & Tables
-
-```sql
-CREATE DATABASE edu_db;
-USE edu_db;
-
-CREATE TABLE students (
-    student_id INT          PRIMARY KEY AUTO_INCREMENT,
-    name       VARCHAR(100) NOT NULL,
-    dept       VARCHAR(50),
-    year       INT          CHECK (year BETWEEN 1 AND 4),
-    email      VARCHAR(100) UNIQUE
-);
-
-CREATE TABLE courses (
-    course_id   INT          PRIMARY KEY AUTO_INCREMENT,
-    course_name VARCHAR(100) NOT NULL,
-    credits     INT,
-    dept        VARCHAR(50)
-);
-
-CREATE TABLE faculty (
-    fac_id   INT          PRIMARY KEY AUTO_INCREMENT,
-    fac_name VARCHAR(100) NOT NULL,
-    dept     VARCHAR(50),
-    salary   DECIMAL(10, 2)
-);
-```
-
-**MySQL Output (example):**
-```text
-Database changed
-Query OK, 0 rows affected  -- students
-Query OK, 0 rows affected  -- courses
-Query OK, 0 rows affected  -- faculty
-```
-
----
-
-## STEP 3: Python Script — Connection + DDL + DML Operations
-
-### File: `connect_edu.py` (Full Script)
-
-```python
-import pymysql
-
-# Step 3: Create connection object
-conn = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="your_password",   # <-- change to your MySQL password
-    database="edu_db"
-)
-print("Connection established successfully!")
-
-# Step 4: Create cursor object
-cursor = conn.cursor()
-```
-
-### DDL: CREATE TABLE (Python-side, alternative approach)
-
-```python
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS enrollments (
-        enroll_id    INT PRIMARY KEY AUTO_INCREMENT,
-        student_id   INT,
-        course_id    INT,
-        enroll_date  DATE
-    )
-""")
-conn.commit()
-print("DDL: Table enrollments created")
-```
-
----
-
-## Disney Database Demo (DDL + DML using Python & MySQL)
-
-> Note: If you use `characters`, `movies`, and `creators`, make sure those tables exist in MySQL first.
-
-### DML: INSERT — Characters
-
-```python
-characters_data = [
-    ("Mickey Mouse",   "Magic Kingdom", 2, "mickey@disney.com"),
-    ("Elsa",           "Frozen",        3, "elsa@disney.com"),
-    ("Simba",          "Lion King",     1, "simba@disney.com"),
-    ("Moana",          "Ocean",         4, "moana@disney.com"),
-    ("Buzz Lightyear", "Toy Story",     2, "buzz@disney.com"),
-]
-
-cursor.executemany(
-    "INSERT INTO characters (name, world, level, email) VALUES (%s, %s, %s, %s)",
-    characters_data
-)
-conn.commit()
-print(f"DML INSERT: {cursor.rowcount} characters inserted")
-```
-
-### DML: INSERT — Movies
-
-```python
-movies_data = [
-    ("Frozen",    4, "Fantasy"),
-    ("Toy Story", 3, "Adventure"),
-    ("Lion King", 4, "Drama"),
-    ("Moana",     3, "Adventure"),
-]
-
-cursor.executemany(
-    "INSERT INTO movies (movie_name, rating, genre) VALUES (%s, %s, %s)",
-    movies_data
-)
-conn.commit()
-print(f"DML INSERT: {cursor.rowcount} movies inserted")
-```
-
-### DML: INSERT — Creators
-
-```python
-cursor.execute(
-    "INSERT INTO creators (creator_name, specialty, salary) VALUES (%s, %s, %s)",
-    ("Walt Disney", "Animation", 100000.00)
-)
-conn.commit()
-print("DML INSERT: 1 creator inserted")
-```
-
----
-
-## DML: SELECT — Fetch and Display Data
-
-```python
-cursor.execute("SELECT * FROM characters ORDER BY character_id")
-rows = cursor.fetchall()
-
-print("\nDML SELECT: All Characters")
-print("-" * 60)
-for row in rows:
-    print(row)
-```
-
-### `fetchone()` example
-
-```python
-cursor.execute("SELECT * FROM movies")
-print("\nDML SELECT (fetchone): First Movie")
-print(cursor.fetchone())
-```
-
-### SELECT with WHERE + parameterized query
-
-```python
-cursor.execute("SELECT * FROM characters WHERE world = %s", ("Magic Kingdom",))
-magic_chars = cursor.fetchall()
-
-print(f"\nMagic Kingdom characters: {len(magic_chars)}")
-for c in magic_chars:
-    print(c)
-```
-
----
-
-## DML: UPDATE — Level up a character
-
-```python
-cursor.execute(
-    "UPDATE characters SET level = level + 1 WHERE name = %s",
-    ("Mickey Mouse",)
-)
-conn.commit()
-print(f"\nDML UPDATE: {cursor.rowcount} row(s) updated")
-
-cursor.execute(
-    "SELECT character_id, name, level FROM characters WHERE name = %s",
-    ("Mickey Mouse",)
-)
-print("After update:", cursor.fetchone())
-```
-
----
-
-## DML: DELETE — Remove a character
-
-```python
-cursor.execute("DELETE FROM characters WHERE name = %s", ("Simba",))
-conn.commit()
-print(f"\nDML DELETE: {cursor.rowcount} row(s) deleted")
-
-cursor.execute("SELECT COUNT(*) FROM characters")
-count = cursor.fetchone()[0]
-print(f"Remaining characters: {count}")
-```
-
----
-
-## DDL: ALTER TABLE — Add a new column
-
-```python
-cursor.execute("ALTER TABLE characters ADD COLUMN magic_power VARCHAR(50)")
-conn.commit()
-print("\nDDL ALTER: column magic_power added to characters")
-```
-
----
-
-## DDL: DROP TABLE (cleanup)
-
-```python
-cursor.execute("DROP TABLE IF EXISTS adventures")
-conn.commit()
-print("DDL DROP: adventures table dropped")
-```
-
----
-
-## Close Connection
-
-```python
-cursor.close()
-conn.close()
-print("\nConnection closed successfully.")
-```
-
----
-
-## Output (Sample)
-
-```text
-Connection established successfully!
-DDL: Table enrollments created
-DML INSERT: 5 characters inserted
-DML INSERT: 4 movies inserted
-DML INSERT: 1 creator inserted
-
-DML SELECT: All Characters
-------------------------------------------------------------
-(1, 'Mickey Mouse', 'Magic Kingdom', 2, 'mickey@disney.com')
-(2, 'Elsa', 'Frozen', 3, 'elsa@disney.com')
-(3, 'Simba', 'Lion King', 1, 'simba@disney.com')
-(4, 'Moana', 'Ocean', 4, 'moana@disney.com')
-(5, 'Buzz Lightyear', 'Toy Story', 2, 'buzz@disney.com')
-
-DML SELECT (fetchone): First Movie
-(1, 'Frozen', 4, 'Fantasy')
-
-Magic Kingdom characters: 1
-(1, 'Mickey Mouse', 'Magic Kingdom', 2, 'mickey@disney.com')
-
-DML UPDATE: 1 row(s) updated
-After update: (1, 'Mickey Mouse', 3)
-
-DML DELETE: 1 row(s) deleted
-Remaining characters: 4
-
-DDL ALTER: column magic_power added to characters
-DDL DROP: adventures table dropped
-
-Connection closed successfully.
-```
-
----
 
 ## Theory
 
@@ -348,7 +205,7 @@ conn.close()
 
 ---
 
-## Key Concepts
+## extra info
 
 | Concept | Description |
 |--------|-------------|
@@ -358,76 +215,6 @@ conn.close()
 | `fetchall()` | Retrieves all rows from the last executed `SELECT` |
 | `fetchone()` | Retrieves one row from the result set |
 | `executemany()` | Inserts/updates multiple rows in one call |
-
----
-
-## Operations to Demonstrate
-
-### DDL from Python
-
-```python
-# CREATE TABLE
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS students (
-        student_id       INT AUTO_INCREMENT PRIMARY KEY,
-        name             VARCHAR(100) NOT NULL,
-        email            VARCHAR(150) UNIQUE,
-        course_id        INT,
-        enrollment_date  DATE
-    )
-""")
-conn.commit()
-
-# ALTER TABLE
-cursor.execute("ALTER TABLE students ADD COLUMN phone VARCHAR(15)")
-conn.commit()
-
-# DROP TABLE
-cursor.execute("DROP TABLE IF EXISTS students")
-conn.commit()
-```
-
-### DML from Python
-
-```python
-# INSERT (single row)
-cursor.execute(
-    "INSERT INTO students (name, email, course_id) VALUES (%s, %s, %s)",
-    ("Alice", "alice@example.com", 1)
-)
-conn.commit()
-
-# INSERT (multiple rows)
-students = [
-    ("Bob", "bob@example.com", 2),
-    ("Carol", "carol@example.com", 1),
-]
-cursor.executemany(
-    "INSERT INTO students (name, email, course_id) VALUES (%s, %s, %s)",
-    students
-)
-conn.commit()
-
-# SELECT (all rows)
-cursor.execute("SELECT * FROM students")
-for row in cursor.fetchall():
-    print(row)
-
-# SELECT (single row with parameterized WHERE)
-cursor.execute("SELECT * FROM students WHERE student_id = %s", (1,))
-print(cursor.fetchone())
-
-# UPDATE
-cursor.execute(
-    "UPDATE students SET email = %s WHERE student_id = %s",
-    ("newemail@example.com", 1)
-)
-conn.commit()
-
-# DELETE
-cursor.execute("DELETE FROM students WHERE student_id = %s", (1,))
-conn.commit()
-```
 
 ---
 
@@ -445,7 +232,3 @@ The cursor:
 - Stores result sets for `SELECT`
 - Provides `execute()`, `executemany()`, `fetchall()`, `fetchone()`
 ```
-
-If you want, I can also:
-1) **Make the Disney demo consistent** with your original `edu_db` tables (students/courses/faculty) so it looks like a single clean assignment, or  
-2) Keep Disney demo but **add the missing MySQL CREATE TABLE** statements for `characters`, `movies`, and `creators`.
